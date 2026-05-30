@@ -9,9 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to Netlify
+      - name: Find site and deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
           npm install -g netlify-cli --silent
+          echo "=== Sites disponibles ==="
+          netlify sites:list --auth $NETLIFY_AUTH_TOKEN --json | python3 -c "
+import sys,json
+sites = json.load(sys.stdin)
+for s in sites:
+    print(s['id'], s['name'], s.get('ssl_url',''))
+"
+          echo "=== Déploiement ==="
           netlify deploy --prod --dir . \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --auth $NETLIFY_AUTH_TOKEN \
             --site jeu2mots
