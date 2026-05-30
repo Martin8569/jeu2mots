@@ -5956,7 +5956,7 @@ async function admOpenEdit(id) {
   document.getElementById('adm-modal').classList.add('open');
 }
 
-function admCloseModal() { document.getElementById('adm-modal').classList.remove('open'); }
+function admOpenCreate() {   document.getElementById('adm-edit-id').value='';   document.getElementById('adm-edit-content').value='';   document.getElementById('adm-edit-fill').value='';   document.getElementById('adm-edit-explanation').value='';   document.getElementById('adm-edit-diff').value='1';   document.getElementById('adm-edit-status').value='approved';   document.getElementById('adm-edit-type').value='mcq';   const al=document.getElementById('adm-edit-answers');   al.innerHTML=''; admState.editAnswerCount=0;   admAddAnswerRow('',true); admAddAnswerRow('',false); admAddAnswerRow('',false); admAddAnswerRow('',false);   document.getElementById('adm-modal-title').textContent='✚ Nouvelle question';   document.getElementById('adm-modal').classList.add('open'); } function admCloseModal() { document.getElementById('adm-modal').classList.remove('open'); }
 
 function admToggleType() {
   const t = document.getElementById('adm-edit-type').value;
