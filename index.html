@@ -5716,7 +5716,7 @@ async function adminLogin() {
     if (error) throw error;
     // Vérifier que l'utilisateur est dans la table admins
     const { data: adminRow } = await sbClient.from('admins').select('id').eq('user_id', data.user.id).single();
-    if (!adminRow) { await sbClient.auth.signOut(); throw new Error('Accès refusé — vous n\'êtes pas administrateur.'); }
+    if (!adminRow || data.user.email !== 'martin@2mots.fr') { await sbClient.auth.signOut(); throw new Error('Accès refusé.'); }
     sessionStorage.setItem(ADM_SESSION_KEY, '1');
     showAdminDashboard();
   } catch(e) {
