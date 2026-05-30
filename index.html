@@ -665,6 +665,76 @@
   /* ============================================================ PROPOSITION DE QUESTION */
   #screen-propose { gap: 20px; }
 
+  /* ============================================================ ADMIN */
+  #screen-admin { gap:0; padding:0 0 60px; }
+  .adm-login { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; }
+  .adm-login h2 { font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--gold); margin-bottom:4px; }
+  .adm-login p { font-size:.85rem; color:rgba(255,255,255,0.45); margin-bottom:8px; }
+  .adm-login input { width:100%; max-width:320px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.2); border-radius:var(--radius); padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:1rem; color:#fff; outline:none; text-align:center; letter-spacing:4px; }
+  .adm-login input:focus { border-color:var(--gold); }
+  .adm-login .adm-err { color:#e87060; font-size:.82rem; min-height:20px; }
+  .adm-wrap { display:none; flex-direction:column; min-height:100vh; }
+  .adm-wrap.visible { display:flex; }
+  .adm-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); position:sticky; top:0; z-index:10; }
+  .adm-topbar h1 { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold); font-weight:700; }
+  .adm-tabs { display:flex; gap:2px; padding:12px 16px 0; border-bottom:1px solid rgba(255,255,255,0.1); overflow-x:auto; }
+  .adm-tab { padding:8px 16px; font-size:.82rem; color:rgba(255,255,255,0.5); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap; transition:all .15s; }
+  .adm-tab.on { color:var(--gold); border-bottom:2px solid var(--gold); }
+  .adm-body { flex:1; padding:20px 16px; }
+  .adm-section { display:none; }
+  .adm-section.on { display:block; }
+  .adm-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:20px; }
+  .adm-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px 14px; text-align:center; }
+  .adm-stat-n { font-size:1.6rem; font-weight:700; color:var(--gold); line-height:1; }
+  .adm-stat-l { font-size:.72rem; color:rgba(255,255,255,0.45); margin-top:4px; }
+  .adm-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .adm-pill { padding:5px 14px; border-radius:999px; border:1px solid rgba(255,255,255,0.2); font-size:.78rem; color:rgba(255,255,255,0.6); background:none; cursor:pointer; transition:all .15s; }
+  .adm-pill.on { background:var(--gold); border-color:var(--gold); color:#000; font-weight:600; }
+  .adm-search { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; font-family:'DM Sans',sans-serif; font-size:.88rem; color:#fff; outline:none; margin-bottom:14px; box-sizing:border-box; }
+  .adm-search:focus { border-color:var(--gold); }
+  .adm-search::placeholder { color:rgba(255,255,255,0.3); }
+  .adm-q-list { display:flex; flex-direction:column; gap:10px; }
+  .adm-q-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:14px 16px; }
+  .adm-q-content { font-size:.9rem; color:rgba(255,255,255,0.9); line-height:1.45; margin-bottom:8px; }
+  .adm-q-meta { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:10px; }
+  .adm-badge { display:inline-block; font-size:.7rem; padding:2px 8px; border-radius:999px; font-weight:600; }
+  .adm-badge-approved { background:rgba(39,174,96,.15); color:#5edb8a; border:1px solid rgba(39,174,96,.3); }
+  .adm-badge-pending  { background:rgba(230,152,0,.12);  color:#f0b030; border:1px solid rgba(230,152,0,.3); }
+  .adm-badge-rejected { background:rgba(192,57,43,.15);  color:#e87060; border:1px solid rgba(192,57,43,.3); }
+  .adm-badge-mcq      { background:rgba(26,86,219,.12);  color:#7ba7f0; border:1px solid rgba(26,86,219,.3); }
+  .adm-badge-fill     { background:rgba(142,68,173,.12); color:#c090e0; border:1px solid rgba(142,68,173,.3); }
+  .adm-badge-community{ background:rgba(26,86,219,.08);  color:#9ab8f5; border:1px solid rgba(26,86,219,.2); }
+  .adm-badge-diff1    { background:rgba(39,174,96,.1);   color:#5edb8a; border:1px solid rgba(39,174,96,.2); }
+  .adm-badge-diff2    { background:rgba(230,152,0,.1);   color:#f0b030; border:1px solid rgba(230,152,0,.2); }
+  .adm-badge-diff3    { background:rgba(192,57,43,.1);   color:#e87060; border:1px solid rgba(192,57,43,.2); }
+  .adm-q-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .adm-btn { padding:6px 14px; border-radius:8px; font-size:.78rem; font-family:'DM Sans',sans-serif; cursor:pointer; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.75); background:rgba(255,255,255,0.05); transition:all .15s; }
+  .adm-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+  .adm-btn-gold    { background:rgba(26,86,219,.15); border-color:rgba(26,86,219,.4); color:#c8aa6e; }
+  .adm-btn-danger  { background:rgba(192,57,43,.1);  border-color:rgba(192,57,43,.4); color:#e87060; }
+  .adm-btn-success { background:rgba(39,174,96,.1);  border-color:rgba(39,174,96,.4); color:#5edb8a; }
+  .adm-pagination { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:20px; font-size:.85rem; color:rgba(255,255,255,0.5); }
+  /* Modal édition */
+  .adm-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:200; align-items:flex-start; justify-content:center; padding:16px; overflow-y:auto; }
+  .adm-modal-bg.open { display:flex; }
+  .adm-modal { background:#111318; border:1px solid rgba(200,170,110,.25); border-radius:16px; padding:24px; width:100%; max-width:640px; margin:auto; }
+  .adm-modal h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--gold); margin-bottom:20px; }
+  .adm-field { margin-bottom:16px; }
+  .adm-label { display:block; font-size:.78rem; color:rgba(255,255,255,0.5); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .adm-input,.adm-textarea,.adm-select { width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:10px 14px; font-family:'DM Sans',sans-serif; font-size:.9rem; color:#fff; outline:none; box-sizing:border-box; }
+  .adm-input:focus,.adm-textarea:focus,.adm-select:focus { border-color:var(--gold); }
+  .adm-textarea { min-height:80px; resize:vertical; }
+  .adm-select option { background:#1a1c24; }
+  .adm-answers-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+  .adm-answer-row { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:8px 12px; }
+  .adm-answer-row.correct { border-color:rgba(39,174,96,0.4); background:rgba(39,174,96,0.06); }
+  .adm-answer-row input[type=radio] { accent-color:#5edb8a; flex-shrink:0; }
+  .adm-answer-row input[type=text] { flex:1; background:none; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:.88rem; color:#fff; }
+  .adm-modal-footer { display:flex; gap:10px; margin-top:24px; justify-content:flex-end; }
+  .adm-save-btn { padding:10px 24px; background:var(--gold); color:#fff; font-weight:700; font-size:.9rem; border:none; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .adm-save-btn:disabled { opacity:.5; cursor:default; }
+  .adm-cancel-btn { padding:10px 20px; background:none; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.6); border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.9rem; }
+
   .propose-header { text-align: center; padding: 1rem 0 0.5rem; }
   .propose-header h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold); }
   .propose-header p  { font-size: .85rem; color: rgba(245,240,232,.55); margin-top: 6px; line-height: 1.6; text-align: left; }
@@ -1518,7 +1588,7 @@
     </a>
     <span style="color:rgba(255,255,255,.2)">&nbsp;·&nbsp;</span>
     <a href="#" onclick="showScreen('screen-privacy');return false" style="color:rgba(255,255,255,.3);text-decoration:none">Politique de confidentialité</a>
-  </p>
+    <a href="#" onclick="openAdmin();return false" style="color:rgba(255,255,255,.08);text-decoration:none;font-size:.7rem;margin-left:8px" title="Admin">⚙</a>  </p>
   </div>
 </div>
 
@@ -2310,6 +2380,154 @@
     </div>
 
   </div><!-- /propose-form -->
+</div>
+
+<!-- ============================================================ ADMIN -->
+<div id="screen-admin" class="screen">
+
+  <!-- LOGIN -->
+  <div id="adm-login" class="adm-login">
+    <h2>⚙ Administration</h2>
+    <p>Connectez-vous avec votre compte Supabase</p>
+    <input type="email"    id="adm-email-input"    placeholder="votre@email.com"  autocomplete="email">
+    <input type="password" id="adm-password-input" placeholder="••••••••" style="letter-spacing:2px" autocomplete="current-password" onkeydown="if(event.key==='Enter')adminLogin()">
+    <div class="adm-err" id="adm-err"></div>
+    <button class="btn btn-gold" onclick="adminLogin()" id="adm-login-btn" style="width:100%;max-width:320px">Connexion →</button>
+    <button class="btn btn-ghost" onclick="showScreen('screen-home')" style="font-size:.8rem;opacity:.5">← Retour</button>
+  </div>
+
+  <!-- DASHBOARD (caché jusqu'à auth) -->
+  <div id="adm-wrap" class="adm-wrap">
+
+    <div class="adm-topbar">
+      <h1>⚙ Admin jeu2mots</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="adm-save-status" style="font-size:.75rem;color:rgba(255,255,255,0.4)"></span>
+        <button class="adm-btn" onclick="adminLogout()">Déconnexion</button>
+        <button class="adm-btn" onclick="showScreen('screen-home')">← Jeu</button>
+      </div>
+    </div>
+
+    <div class="adm-tabs">
+      <button class="adm-tab on"  onclick="admTab('questions')">Questions</button>
+      <button class="adm-tab"     onclick="admTab('pending')">En attente <span id="adm-pending-badge" style="color:var(--gold)"></span></button>
+      <button class="adm-tab"     onclick="admTab('categories')">Catégories</button>
+      <button class="adm-tab"     onclick="admTab('parametres')">Paramètres</button>
+    </div>
+
+    <div class="adm-body">
+
+      <!-- ===== QUESTIONS ===== -->
+      <div id="adm-section-questions" class="adm-section on">
+        <div class="adm-stats">
+          <div class="adm-stat"><div class="adm-stat-n" id="adm-n-total">…</div><div class="adm-stat-l">Total</div></div>
+          <div class="adm-stat"><div class="adm-stat-n" id="adm-n-approved" style="color:#5edb8a">…</div><div class="adm-stat-l">Approuvées</div></div>
+          <div class="adm-stat"><div class="adm-stat-n" id="adm-n-pending"  style="color:#f0b030">…</div><div class="adm-stat-l">En attente</div></div>
+          <div class="adm-stat"><div class="adm-stat-n" id="adm-n-community" style="color:#9ab8f5">…</div><div class="adm-stat-l">Communauté</div></div>
+        </div>
+        <input class="adm-search" type="text" id="adm-search" placeholder="🔍 Rechercher…" oninput="admFilterQuestions()">
+        <div class="adm-filters">
+          <button class="adm-pill on" onclick="admSetFilter(this,'all')">Toutes</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'approved')">Approuvées</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'pending')">En attente</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'rejected')">Rejetées</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'community')">Communauté</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'diff1')">Facile</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'diff2')">Moyen</button>
+          <button class="adm-pill" onclick="admSetFilter(this,'diff3')">Difficile</button>
+        </div>
+        <div id="adm-q-list" class="adm-q-list"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+        <div class="adm-pagination">
+          <button class="adm-btn" id="adm-prev" onclick="admPrevPage()">← Préc.</button>
+          <span id="adm-page-info" style="color:rgba(255,255,255,.6)">page 1</span>
+          <button class="adm-btn" id="adm-next" onclick="admNextPage()">Suiv. →</button>
+        </div>
+      </div>
+
+      <!-- ===== EN ATTENTE ===== -->
+      <div id="adm-section-pending" class="adm-section">
+        <p style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:16px">Questions proposées par les joueurs — à valider ou rejeter.</p>
+        <div id="adm-pending-list" class="adm-q-list"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+      </div>
+
+      <!-- ===== CATEGORIES ===== -->
+      <div id="adm-section-categories" class="adm-section">
+        <div id="adm-cat-list" style="display:flex;flex-direction:column;gap:10px"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+      </div>
+
+      <!-- ===== PARAMETRES ===== -->
+      <div id="adm-section-parametres" class="adm-section">
+        <div id="adm-settings-list" style="display:flex;flex-direction:column;gap:10px"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+        <div style="margin-top:24px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:12px">
+          <div style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:12px;font-weight:500">🔑 Modifier le mot de passe admin</div>
+          <input class="adm-input" type="password" id="adm-new-pwd" placeholder="Nouveau mot de passe" style="margin-bottom:8px">
+          <input class="adm-input" type="password" id="adm-new-pwd2" placeholder="Confirmer le mot de passe">
+          <button class="adm-btn adm-btn-gold" onclick="admChangePwd()" style="margin-top:10px">Enregistrer le nouveau mot de passe</button>
+          <div id="adm-pwd-msg" style="font-size:.78rem;margin-top:6px;min-height:18px"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ÉDITION QUESTION -->
+<div class="adm-modal-bg" id="adm-modal">
+  <div class="adm-modal">
+    <h3 id="adm-modal-title">✏ Modifier la question</h3>
+    <input type="hidden" id="adm-edit-id">
+    <div class="adm-field">
+      <label class="adm-label">Contenu de la question</label>
+      <textarea class="adm-textarea" id="adm-edit-content" rows="3"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="adm-field">
+        <label class="adm-label">Type</label>
+        <select class="adm-select" id="adm-edit-type" onchange="admToggleType()">
+          <option value="mcq">QCM</option>
+          <option value="fill">Phrase à trou</option>
+          <option value="rewrite">Réécriture</option>
+        </select>
+      </div>
+      <div class="adm-field">
+        <label class="adm-label">Difficulté</label>
+        <select class="adm-select" id="adm-edit-diff">
+          <option value="1">1 — Facile</option>
+          <option value="2">2 — Moyen</option>
+          <option value="3">3 — Difficile</option>
+        </select>
+      </div>
+    </div>
+    <div class="adm-field">
+      <label class="adm-label">Statut</label>
+      <select class="adm-select" id="adm-edit-status">
+        <option value="approved">Approuvée</option>
+        <option value="pending">En attente</option>
+        <option value="rejected">Rejetée</option>
+      </select>
+    </div>
+    <div class="adm-field" id="adm-fill-row" style="display:none">
+      <label class="adm-label">Template à trou (utilisez ___ pour le blanc)</label>
+      <input class="adm-input" id="adm-edit-fill" type="text">
+    </div>
+    <div class="adm-field" id="adm-answers-section">
+      <label class="adm-label">Réponses <span style="color:rgba(255,255,255,.3);font-size:.7rem">(cochez la bonne)</span></label>
+      <div class="adm-answers-list" id="adm-edit-answers"></div>
+      <button class="adm-btn" onclick="admAddAnswer()" style="margin-top:8px">+ Ajouter une réponse</button>
+    </div>
+    <div class="adm-field">
+      <label class="adm-label">Explication (après réponse)</label>
+      <textarea class="adm-textarea" id="adm-edit-explanation" rows="2"></textarea>
+    </div>
+    <div class="adm-field">
+      <label class="adm-label">Points</label>
+      <input class="adm-input" id="adm-edit-points" type="number" value="10" style="width:100px">
+    </div>
+    <div class="adm-modal-footer">
+      <button class="adm-cancel-btn" onclick="admCloseModal()">Annuler</button>
+      <button class="adm-save-btn" id="adm-save-btn" onclick="admSaveQuestion()">Enregistrer →</button>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -5471,6 +5689,384 @@ async function chShowResult() {
       }).eq('id', ch.id);
     } catch(e) {}
   }
+}
+
+// ============================================================
+// ADMIN — authentification via Supabase Auth
+// ============================================================
+const ADM_SESSION_KEY = 'j2m_admin_ok';
+
+let admState = {
+  allQuestions: [], filtered: [], categories: [],
+  currentPage: 1, pageSize: 15,
+  filterStatus: 'all', searchText: '',
+  editAnswerCount: 0
+};
+
+async function adminLogin() {
+  const email = document.getElementById('adm-email-input').value.trim();
+  const pwd   = document.getElementById('adm-password-input').value;
+  const errEl = document.getElementById('adm-err');
+  const btn   = document.getElementById('adm-login-btn');
+  errEl.textContent = '';
+  if (!email || !pwd) { errEl.textContent = 'Renseignez email et mot de passe.'; return; }
+  btn.disabled = true; btn.textContent = 'Connexion…';
+  try {
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pwd });
+    if (error) throw error;
+    // Vérifier que l'utilisateur est dans la table admins
+    const { data: adminRow } = await sbClient.from('admins').select('id').eq('user_id', data.user.id).single();
+    if (!adminRow) { await sbClient.auth.signOut(); throw new Error('Accès refusé — vous n\'êtes pas administrateur.'); }
+    sessionStorage.setItem(ADM_SESSION_KEY, '1');
+    showAdminDashboard();
+  } catch(e) {
+    errEl.textContent = e.message || 'Erreur de connexion.';
+    btn.disabled = false; btn.textContent = 'Connexion →';
+  }
+}
+
+async function openAdmin() {
+  showScreen('screen-admin');
+  // Vérifie si session Supabase active + admin
+  if (sbClient) {
+    try {
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (session?.user) {
+        const { data: adminRow } = await sbClient.from('admins').select('id').eq('user_id', session.user.id).single();
+        if (adminRow) { showAdminDashboard(); return; }
+      }
+    } catch(e) {}
+  }
+  document.getElementById('adm-login').style.display = 'flex';
+  document.getElementById('adm-wrap').classList.remove('visible');
+}
+
+function showAdminDashboard() {
+  document.getElementById('adm-login').style.display = 'none';
+  document.getElementById('adm-wrap').classList.add('visible');
+  admLoadAll();
+}
+
+async function adminLogout() {
+  if (sbClient) await sbClient.auth.signOut();
+  sessionStorage.removeItem(ADM_SESSION_KEY);
+  document.getElementById('adm-wrap').classList.remove('visible');
+  document.getElementById('adm-login').style.display = 'flex';
+  document.getElementById('adm-email-input').value = '';
+  document.getElementById('adm-password-input').value = '';
+}
+
+async function admChangePwd() {
+  const p1 = document.getElementById('adm-new-pwd').value;
+  const p2 = document.getElementById('adm-new-pwd2').value;
+  const msg = document.getElementById('adm-pwd-msg');
+  if (p1.length < 8) { msg.style.color='#e87060'; msg.textContent='Minimum 8 caractères.'; return; }
+  if (p1 !== p2)     { msg.style.color='#e87060'; msg.textContent='Les mots de passe ne correspondent pas.'; return; }
+  const { error } = await sbClient.auth.updateUser({ password: p1 });
+  if (error) { msg.style.color='#e87060'; msg.textContent='Erreur : ' + error.message; }
+  else { msg.style.color='#5edb8a'; msg.textContent='✓ Mot de passe mis à jour.'; document.getElementById('adm-new-pwd').value=''; document.getElementById('adm-new-pwd2').value=''; }
+}
+
+// ============================================================
+// ADMIN — chargement
+// ============================================================
+async function admLoadAll() {
+  await Promise.all([admLoadQuestions(), admLoadCategories(), admLoadSettings()]);
+}
+
+async function admLoadQuestions() {
+  if (!sbClient) return;
+  const { data } = await sbClient.from('questions').select('*, answers(*)').order('created_at', { ascending: false });
+  admState.allQuestions = data || [];
+  const total     = admState.allQuestions.length;
+  const approved  = admState.allQuestions.filter(q=>q.status==='approved').length;
+  const pending   = admState.allQuestions.filter(q=>q.status==='pending').length;
+  const community = admState.allQuestions.filter(q=>q.is_community).length;
+  const el = id => document.getElementById(id);
+  el('adm-n-total').textContent     = total;
+  el('adm-n-approved').textContent  = approved;
+  el('adm-n-pending').textContent   = pending;
+  el('adm-n-community').textContent = community;
+  const pb = el('adm-pending-badge');
+  if (pb) pb.textContent = pending > 0 ? `(${pending})` : '';
+  document.querySelectorAll('.adm-tab')[0].textContent = `Questions (${total})`;
+  admApplyFilters();
+  admRenderPending();
+}
+
+async function admLoadCategories() {
+  if (!sbClient) return;
+  const { data } = await sbClient.from('categories').select('*').order('label');
+  admState.categories = data || [];
+  admRenderCategories();
+}
+
+async function admLoadSettings() {
+  if (!sbClient) return;
+  const { data } = await sbClient.from('settings').select('*').order('key');
+  admRenderSettings(data || []);
+}
+
+// ============================================================
+// ADMIN — onglets
+// ============================================================
+function admTab(name) {
+  document.querySelectorAll('.adm-tab').forEach((t,i) => {
+    t.classList.toggle('on', ['questions','pending','categories','parametres'][i] === name);
+  });
+  document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('on'));
+  const sec = document.getElementById('adm-section-' + name);
+  if (sec) sec.classList.add('on');
+}
+
+// ============================================================
+// ADMIN — filtres & rendu questions
+// ============================================================
+function admSetFilter(el, filter) {
+  document.querySelectorAll('.adm-pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  admState.filterStatus = filter;
+  admState.currentPage = 1;
+  admApplyFilters();
+}
+
+function admFilterQuestions() {
+  admState.searchText = document.getElementById('adm-search').value.toLowerCase();
+  admState.currentPage = 1;
+  admApplyFilters();
+}
+
+function admApplyFilters() {
+  let qs = admState.allQuestions;
+  const f = admState.filterStatus, s = admState.searchText;
+  if (f==='approved')  qs = qs.filter(q=>q.status==='approved');
+  if (f==='pending')   qs = qs.filter(q=>q.status==='pending');
+  if (f==='rejected')  qs = qs.filter(q=>q.status==='rejected');
+  if (f==='community') qs = qs.filter(q=>q.is_community);
+  if (f==='diff1')     qs = qs.filter(q=>q.difficulty===1);
+  if (f==='diff2')     qs = qs.filter(q=>q.difficulty===2);
+  if (f==='diff3')     qs = qs.filter(q=>q.difficulty===3);
+  if (s) qs = qs.filter(q=>(q.content||'').toLowerCase().includes(s)||(q.author_pseudo||'').toLowerCase().includes(s));
+  admState.filtered = qs;
+  admRenderQList();
+}
+
+function admRenderQList() {
+  const list = document.getElementById('adm-q-list');
+  const { filtered, currentPage, pageSize } = admState;
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total/pageSize));
+  const page = Math.min(currentPage, totalPages);
+  admState.currentPage = page;
+  const start = (page-1)*pageSize;
+  const slice = filtered.slice(start, start+pageSize);
+  document.getElementById('adm-page-info').textContent = `Page ${page}/${totalPages} — ${total} question${total>1?'s':''}`;
+  document.getElementById('adm-prev').disabled = page<=1;
+  document.getElementById('adm-next').disabled = page>=totalPages;
+  if (!slice.length) { list.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.3);padding:40px 0">Aucune question trouvée</p>'; return; }
+  list.innerHTML = slice.map(q => admQCard(q)).join('');
+}
+
+function admQCard(q) {
+  const st = { approved:'<span class="adm-badge adm-badge-approved">approuvée</span>', pending:'<span class="adm-badge adm-badge-pending">en attente</span>', rejected:'<span class="adm-badge adm-badge-rejected">rejetée</span>' }[q.status]||'';
+  const ty = q.question_type==='fill'?'<span class="adm-badge adm-badge-fill">à trou</span>':q.question_type==='rewrite'?'<span class="adm-badge adm-badge-fill">réécriture</span>':'<span class="adm-badge adm-badge-mcq">QCM</span>';
+  const df = q.difficulty?`<span class="adm-badge adm-badge-diff${q.difficulty}">diff.${q.difficulty}</span>`:'';
+  const cm = q.is_community?`<span class="adm-badge adm-badge-community">communauté · ${q.author_pseudo||'?'}</span>`:'';
+  const st2 = q.times_played?`<span style="font-size:.72rem;color:rgba(255,255,255,.3)">${q.times_played} jouées · ${Math.round((q.correct_rate||0)*100)}% réussite</span>`:'';
+  const ans = (q.answers||[]).map(a=>`<span style="font-size:.75rem;color:${a.is_correct?'#5edb8a':'rgba(255,255,255,.35)'}">${a.is_correct?'✓':'·'} ${a.content}</span>`).join('  ');
+  const idStr = JSON.stringify(q.id);
+  return `<div class="adm-q-card">
+    <div class="adm-q-content">${q.content||'<em style="opacity:.4">sans contenu</em>'}</div>
+    <div class="adm-q-meta">${st} ${ty} ${df} ${cm} ${st2}</div>
+    ${ans?`<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px">${ans}</div>`:''}
+    <div class="adm-q-actions">
+      <button class="adm-btn adm-btn-gold" onclick='admOpenEdit(${idStr})'>✏ Modifier</button>
+      ${q.status!=='approved'?`<button class="adm-btn adm-btn-success" onclick='admQuickStatus("${q.id}","approved")'>✓ Approuver</button>`:`<button class="adm-btn" onclick='admQuickStatus("${q.id}","pending")'>Dépublier</button>`}
+      ${q.status!=='rejected'?`<button class="adm-btn adm-btn-danger" onclick='admQuickStatus("${q.id}","rejected")'>✗ Rejeter</button>`:''}
+    </div>
+  </div>`;
+}
+
+function admPrevPage() { admState.currentPage--; admRenderQList(); }
+function admNextPage() { admState.currentPage++; admRenderQList(); }
+
+// ============================================================
+// ADMIN — modération
+// ============================================================
+function admRenderPending() {
+  const list = document.getElementById('adm-pending-list');
+  const qs = admState.allQuestions.filter(q=>q.status==='pending');
+  if (!qs.length) { list.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.3);padding:40px 0">Aucune question en attente 🎉</p>'; return; }
+  list.innerHTML = qs.map(q=>`
+<div class="adm-q-card" id="adm-pend-${q.id}">
+  <div class="adm-q-content">${q.content}</div>
+  <div class="adm-q-meta">
+    <span class="adm-badge adm-badge-pending">en attente</span>
+    ${q.is_community?`<span class="adm-badge adm-badge-community">par ${q.author_pseudo||'anonyme'}</span>`:''}
+    ${q.question_type==='fill'?'<span class="adm-badge adm-badge-fill">à trou</span>':'<span class="adm-badge adm-badge-mcq">QCM</span>'}
+    ${q.difficulty?`<span class="adm-badge adm-badge-diff${q.difficulty}">diff.${q.difficulty}</span>`:''}
+  </div>
+  ${(q.answers||[]).map(a=>`<div style="font-size:.8rem;padding:2px 0;color:${a.is_correct?'#5edb8a':'rgba(255,255,255,.4)'}">${a.is_correct?'✓':'·'} ${a.content}</div>`).join('')}
+  ${q.explanation?`<div style="font-size:.78rem;color:rgba(255,255,255,.35);margin-top:6px;font-style:italic">💡 ${q.explanation}</div>`:''}
+  <div class="adm-q-actions" style="margin-top:12px">
+    <button class="adm-btn adm-btn-success" onclick='admQuickStatus("${q.id}","approved","pend")'>✓ Approuver</button>
+    <button class="adm-btn adm-btn-gold"    onclick='admOpenEdit("${q.id}")'>✏ Modifier d'abord</button>
+    <button class="adm-btn adm-btn-danger"  onclick='admQuickStatus("${q.id}","rejected","pend")'>✗ Rejeter</button>
+  </div>
+</div>`).join('');
+}
+
+async function admQuickStatus(id, newStatus, ctx) {
+  if (!sbClient) return;
+  const { error } = await sbClient.from('questions').update({ status: newStatus }).eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message); return; }
+  const q = admState.allQuestions.find(q=>q.id===id);
+  if (q) q.status = newStatus;
+  showToast(newStatus==='approved'?'✓ Approuvée':newStatus==='rejected'?'✗ Rejetée':'Statut mis à jour');
+  if (ctx==='pend') { const c = document.getElementById('adm-pend-'+id); if(c) c.remove(); }
+  const approved = admState.allQuestions.filter(q=>q.status==='approved').length;
+  const pending  = admState.allQuestions.filter(q=>q.status==='pending').length;
+  document.getElementById('adm-n-approved').textContent = approved;
+  document.getElementById('adm-n-pending').textContent  = pending;
+  const pb = document.getElementById('adm-pending-badge');
+  if (pb) pb.textContent = pending>0?`(${pending})`:'';
+  admApplyFilters();
+}
+
+// ============================================================
+// ADMIN — modal édition
+// ============================================================
+async function admOpenEdit(id) {
+  if (!sbClient) return;
+  const { data: q } = await sbClient.from('questions').select('*, answers(*)').eq('id', id).single();
+  if (!q) return;
+  document.getElementById('adm-edit-id').value          = q.id;
+  document.getElementById('adm-edit-content').value     = q.content||'';
+  document.getElementById('adm-edit-type').value        = q.question_type||'mcq';
+  document.getElementById('adm-edit-diff').value        = q.difficulty||1;
+  document.getElementById('adm-edit-status').value      = q.status||'pending';
+  document.getElementById('adm-edit-fill').value        = q.fill_template||'';
+  document.getElementById('adm-edit-explanation').value = q.explanation||'';
+  document.getElementById('adm-edit-points').value      = q.points_value||10;
+  admToggleType();
+  const al = document.getElementById('adm-edit-answers');
+  al.innerHTML = ''; admState.editAnswerCount = 0;
+  if (q.answers && q.answers.length) { q.answers.forEach(a=>admAddAnswerRow(a.content, a.is_correct)); }
+  else { admAddAnswerRow('',true); admAddAnswerRow('',false); admAddAnswerRow('',false); admAddAnswerRow('',false); }
+  document.getElementById('adm-modal').classList.add('open');
+}
+
+function admCloseModal() { document.getElementById('adm-modal').classList.remove('open'); }
+
+function admToggleType() {
+  const t = document.getElementById('adm-edit-type').value;
+  document.getElementById('adm-fill-row').style.display        = t==='fill'?'block':'none';
+  document.getElementById('adm-answers-section').style.display = t==='rewrite'?'none':'block';
+}
+
+function admAddAnswer() { admAddAnswerRow('', false); }
+
+function admAddAnswerRow(content='', isCorrect=false) {
+  admState.editAnswerCount++;
+  const n = admState.editAnswerCount;
+  const row = document.createElement('div');
+  row.className = 'adm-answer-row' + (isCorrect?' correct':'');
+  row.id = 'adm-ans-row-'+n;
+  row.innerHTML = `
+    <input type="radio" name="adm-correct" value="${n}" ${isCorrect?'checked':''} onchange="admMarkCorrect(${n})">
+    <input type="text" value="${content}" placeholder="Réponse…" id="adm-ans-${n}">
+    <button class="adm-btn adm-btn-danger" onclick="document.getElementById('adm-ans-row-${n}').remove()" style="padding:4px 8px;font-size:.7rem">✕</button>`;
+  document.getElementById('adm-edit-answers').appendChild(row);
+}
+
+function admMarkCorrect(n) {
+  document.querySelectorAll('.adm-answer-row').forEach(r=>r.classList.remove('correct'));
+  const row = document.getElementById('adm-ans-row-'+n);
+  if (row) row.classList.add('correct');
+}
+
+async function admSaveQuestion() {
+  if (!sbClient) return;
+  const id      = document.getElementById('adm-edit-id').value;
+  const content = document.getElementById('adm-edit-content').value.trim();
+  const type    = document.getElementById('adm-edit-type').value;
+  const diff    = parseInt(document.getElementById('adm-edit-diff').value);
+  const status  = document.getElementById('adm-edit-status').value;
+  const fill    = document.getElementById('adm-edit-fill').value.trim();
+  const expl    = document.getElementById('adm-edit-explanation').value.trim();
+  const points  = parseInt(document.getElementById('adm-edit-points').value)||10;
+  if (!content) { showToast('Le contenu est obligatoire.'); return; }
+  const answers = [];
+  document.querySelectorAll('#adm-edit-answers .adm-answer-row').forEach(row=>{
+    const radio = row.querySelector('input[type=radio]');
+    const text  = row.querySelector('input[type=text]');
+    if (text && text.value.trim()) answers.push({ content:text.value.trim(), is_correct:radio?radio.checked:false });
+  });
+  if (type==='mcq' && !answers.length)          { showToast('Ajoutez au moins une réponse.'); return; }
+  if (type==='mcq' && !answers.some(a=>a.is_correct)) { showToast('Cochez la bonne réponse.'); return; }
+  const btn = document.getElementById('adm-save-btn');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const statusEl = document.getElementById('adm-save-status');
+  try {
+    await sbClient.from('questions').update({ content, question_type:type, difficulty:diff, status, fill_template:fill||null, explanation:expl||null, points_value:points, editorial_validated:status==='approved' }).eq('id', id);
+    await sbClient.from('answers').delete().eq('question_id', id);
+    if (answers.length) await sbClient.from('answers').insert(answers.map(a=>({ question_id:id, content:a.content, is_correct:a.is_correct })));
+    const idx = admState.allQuestions.findIndex(q=>q.id===id);
+    if (idx>=0) admState.allQuestions[idx] = { ...admState.allQuestions[idx], content, question_type:type, difficulty:diff, status, fill_template:fill||null, explanation:expl||null, points_value:points, answers };
+    showToast('✓ Question enregistrée');
+    if (statusEl) { statusEl.textContent='✓ Sauvegardé'; setTimeout(()=>{ statusEl.textContent=''; },3000); }
+    admCloseModal(); admApplyFilters(); admRenderPending();
+  } catch(e) {
+    showToast('Erreur : '+(e.message||'inconnue'));
+    if (statusEl) statusEl.textContent='✗ Erreur';
+  }
+  btn.disabled=false; btn.textContent='Enregistrer →';
+}
+
+// ============================================================
+// ADMIN — catégories
+// ============================================================
+function admRenderCategories() {
+  const el = document.getElementById('adm-cat-list');
+  if (!admState.categories.length) { el.innerHTML='<p style="color:rgba(255,255,255,.3)">Aucune catégorie</p>'; return; }
+  el.innerHTML = admState.categories.map(c=>`
+<div class="adm-q-card" style="display:flex;align-items:center;justify-content:space-between">
+  <div>
+    <div style="font-size:.9rem;color:#fff;margin-bottom:2px">${c.label}</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.3)">${c.slug||''}</div>
+  </div>
+  <span style="font-size:.78rem;color:rgba(255,255,255,.35)">${c.is_active!==false?'● actif':'○ inactif'}</span>
+</div>`).join('');
+}
+
+// ============================================================
+// ADMIN — paramètres
+// ============================================================
+function admRenderSettings(settings) {
+  const el = document.getElementById('adm-settings-list');
+  if (!settings.length) { el.innerHTML='<p style="color:rgba(255,255,255,.3)">Aucun paramètre</p>'; return; }
+  const editableKeys = ['min_level_propose','questions_per_game','default_time_limit','diff_easy_threshold','diff_hard_threshold','auto_approve_votes'];
+  el.innerHTML = settings.map(s=>{
+    const editable = editableKeys.includes(s.key);
+    return `<div class="adm-q-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <div style="flex:1;min-width:0">
+    <div style="font-size:.85rem;color:#fff;font-weight:500">${s.key}</div>
+    ${s.description?`<div style="font-size:.75rem;color:rgba(255,255,255,.3);margin-top:2px">${s.description}</div>`:''}
+  </div>
+  <div style="flex-shrink:0">
+    ${editable
+      ? `<input class="adm-input" style="width:140px;text-align:right" value="${s.value||''}" onblur="admSaveSetting('${s.key}',this.value)" onkeydown="if(event.key==='Enter')admSaveSetting('${s.key}',this.value)">`
+      : `<span style="font-size:.85rem;color:rgba(255,255,255,.45);font-family:monospace">${s.value}</span>`}
+  </div>
+</div>`;
+  }).join('');
+}
+
+async function admSaveSetting(key, value) {
+  if (!sbClient) return;
+  const { error } = await sbClient.from('settings').update({ value }).eq('key', key);
+  if (error) showToast('Erreur : '+error.message);
+  else { showToast(`✓ ${key} mis à jour`); if(state.settings) state.settings[key]=value; }
 }
 
 // ============================================================
