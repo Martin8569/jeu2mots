@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2mots - Maîtriser la langue française</title>
+<title>2mots — Maîtriser la langue française</title>
 <meta name="description" content="Testez et améliorez votre maîtrise de la langue française. QCM, phrases à trou, littérature, vocabulaire, techniques d'écriture.">
 <meta property="og:title" content="2mots — Maîtriser la langue française">
 <meta property="og:description" content="Testez votre niveau en littérature, vocabulaire et techniques d'écriture. Rejoignez la communauté !">
@@ -1588,7 +1588,7 @@
     </a>
     <span style="color:rgba(255,255,255,.2)">&nbsp;·&nbsp;</span>
     <a href="#" onclick="showScreen('screen-privacy');return false" style="color:rgba(255,255,255,.3);text-decoration:none">Politique de confidentialité</a>
-    <a href="#" onclick="openAdmin();return false" style="color:rgba(255,255,255,.08);text-decoration:none;font-size:.7rem;margin-left:8px" title="Admin">⚙</a>  </p>
+    <a href="#" onclick="openAdmin();return false" style="color:rgba(255,255,255,.3);text-decoration:none;font-size:1rem;margin-left:10px;padding:4px" title="Admin">⚙</a>  </p>
   </div>
 </div>
 
@@ -2436,7 +2436,7 @@
           <button class="adm-pill" onclick="admSetFilter(this,'diff2')">Moyen</button>
           <button class="adm-pill" onclick="admSetFilter(this,'diff3')">Difficile</button>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="adm-btn adm-btn-gold" onclick="admOpenCreate()" style="padding:8px 18px;font-size:.85rem">✚ Nouvelle question</button></div><div id="adm-q-list" class="adm-q-list"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+        <div id="adm-q-list" class="adm-q-list"><div class="loading-dots"><span></span><span></span><span></span></div></div>
         <div class="adm-pagination">
           <button class="adm-btn" id="adm-prev" onclick="admPrevPage()">← Préc.</button>
           <span id="adm-page-info" style="color:rgba(255,255,255,.6)">page 1</span>
@@ -2486,7 +2486,7 @@
         <select class="adm-select" id="adm-edit-type" onchange="admToggleType()">
           <option value="mcq">QCM</option>
           <option value="fill">Phrase à trou</option>
-          <option value="truefalse">Vrai / Faux</option><option value="order">Ordonnancement</option><option value="rewrite">Réponse libre IA</option>
+          <option value="rewrite">Réécriture</option>
         </select>
       </div>
       <div class="adm-field">
@@ -5716,7 +5716,7 @@ async function adminLogin() {
     if (error) throw error;
     // Vérifier que l'utilisateur est dans la table admins
     const { data: adminRow } = await sbClient.from('admins').select('id').eq('user_id', data.user.id).single();
-    if (!adminRow || data.user.email !== 'martin@2mots.fr') { await sbClient.auth.signOut(); throw new Error('Accès refusé.'); }
+    if (!adminRow) { await sbClient.auth.signOut(); throw new Error('Accès refusé — vous n\'êtes pas administrateur.'); }
     sessionStorage.setItem(ADM_SESSION_KEY, '1');
     showAdminDashboard();
   } catch(e) {
@@ -5733,7 +5733,7 @@ async function openAdmin() {
       const { data: { session } } = await sbClient.auth.getSession();
       if (session?.user) {
         const { data: adminRow } = await sbClient.from('admins').select('id').eq('user_id', session.user.id).single();
-        if (session?.user?.email === 'martin@2mots.fr') { showAdminDashboard(); return; } showAdminDashboard(); return; }
+        if (adminRow) { showAdminDashboard(); return; }
       }
     } catch(e) {}
   }
@@ -5956,7 +5956,7 @@ async function admOpenEdit(id) {
   document.getElementById('adm-modal').classList.add('open');
 }
 
-function admOpenCreate() {   document.getElementById('adm-edit-id').value='';   document.getElementById('adm-edit-content').value='';   document.getElementById('adm-edit-fill').value='';   document.getElementById('adm-edit-explanation').value='';   document.getElementById('adm-edit-diff').value='1';   document.getElementById('adm-edit-status').value='approved';   document.getElementById('adm-edit-type').value='mcq';   const al=document.getElementById('adm-edit-answers');   al.innerHTML=''; admState.editAnswerCount=0;   admAddAnswerRow('',true); admAddAnswerRow('',false); admAddAnswerRow('',false); admAddAnswerRow('',false);   document.getElementById('adm-modal-title').textContent='✚ Nouvelle question';   document.getElementById('adm-modal').classList.add('open'); } function admCloseModal() { document.getElementById('adm-modal').classList.remove('open'); }
+function admOpenCreate(){var al=document.getElementById("adm-edit-answers");al.innerHTML="";admState.editAnswerCount=0;["adm-edit-id","adm-edit-content","adm-edit-fill","adm-edit-explanation"].forEach(i=>document.getElementById(i).value="");document.getElementById("adm-edit-diff").value="1";document.getElementById("adm-edit-status").value="approved";document.getElementById("adm-edit-type").value="mcq";admAddAnswerRow("",true);admAddAnswerRow("",false);admAddAnswerRow("",false);admAddAnswerRow("",false);document.getElementById("adm-modal-title").textContent="+ Nouvelle question";document.getElementById("adm-modal").classList.add("open");}function admCloseModal() { document.getElementById('adm-modal').classList.remove('open'); }
 
 function admToggleType() {
   const t = document.getElementById('adm-edit-type').value;
