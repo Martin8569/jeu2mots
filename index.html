@@ -2091,7 +2091,26 @@
     <div class="lp-pts-needed" id="lp-pts-needed"></div>
   </div>
 
-  <!-- Classements -->
+  <!-- ============================================================ CURRICULUM / PROGRAMME -->
+<div id="screen-curriculum" class="screen">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff">📋 Mon programme</h2>
+    <button class="btn btn-ghost" onclick="showScreen('screen-dashboard')" style="padding:6px 14px;font-size:.85rem">← Retour</button>
+  </div>
+  <p style="font-size:.88rem;color:rgba(255,255,255,.6);margin-bottom:20px;line-height:1.5">
+    Cochez les catégories que vous voulez travailler.<br>
+    <span style="color:rgba(255,255,255,.35);font-size:.8rem">Laissez tout décoché pour jouer sur toutes les catégories.</span>
+  </p>
+  <div id="curriculum-list" style="display:flex;flex-direction:column;gap:10px">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+  <div style="margin-top:24px;display:flex;gap:10px">
+    <button class="btn btn-ghost" onclick="saveCurriculum('clear')" style="flex:1;font-size:.85rem">🔄 Tout réinitialiser</button>
+    <button class="btn btn-primary" onclick="saveCurriculum('save')" style="flex:1">✓ Enregistrer</button>
+  </div>
+</div>
+
+<!-- Classements -->
   <div>
     <div class="dash-section-title">Vos classements</div>
     <div class="rank-cards">
@@ -2891,6 +2910,47 @@ async function loadQuestions() {
     questions = getFallbackQuestions();
   }
 
+  // ── Curriculum joueur : filtrer par catégories choisies ────────
+  if (sbClient && state.playerId && !state.selectedCategory) {
+    try {
+      const { data: curriculum } = await sbClient
+        .from('player_curriculum')
+        .select('category_id, mode')
+        .eq('player_id', state.playerId);
+
+      if (curriculum && curriculum.length > 0) {
+        const activeIds = curriculum.filter(c => c.mode === 'active').map(c => c.category_id);
+        const excludedIds = curriculum.filter(c => c.mode === 'excluded').map(c => c.category_id);
+
+        if (activeIds.length > 0) {
+          // Opt-in : seulement les catégories cochées
+          const { data: catLinks } = await sbClient
+            .from('question_categories')
+            .select('question_id')
+            .in('category_id', activeIds);
+          if (catLinks && catLinks.length > 0) {
+            const allowedIds = new Set(catLinks.map(r => r.question_id));
+            questions = questions.filter(q => allowedIds.has(q.id));
+            console.log('[curriculum] Opt-in actif:', activeIds.length, 'catégories →', questions.length, 'questions');
+          }
+        } else if (excludedIds.length > 0) {
+          // Opt-out : exclure les catégories non voulues
+          const { data: excludedLinks } = await sbClient
+            .from('question_categories')
+            .select('question_id')
+            .in('category_id', excludedIds);
+          if (excludedLinks && excludedLinks.length > 0) {
+            const excludedQIds = new Set(excludedLinks.map(r => r.question_id));
+            questions = questions.filter(q => !excludedQIds.has(q.id));
+            console.log('[curriculum] Opt-out actif:', excludedIds.length, 'catégories exclues →', questions.length, 'questions');
+          }
+        }
+      }
+    } catch(e) {
+      console.warn('[curriculum] Erreur lecture curriculum:', e);
+    }
+  }
+
   // ── Répétition espacée : filtrer selon la maîtrise du joueur ─
   if (sbClient && state.playerEmail && questions.length > 0) {
     try {
@@ -3647,6 +3707,100 @@ function handleSupabaseError(error, context) {
     showToast('Session expirée. Reconnectez-vous.', 'warn');
   }
 }
+
+// ============================================================
+// CURRICULUM : programme personnel du joueur
+// ============================================================
+let curriculumDraft = {}; // { category_id: 'active'|'excluded'|'none' }
+
+async function openCurriculum() {
+  showScreen('screen-curriculum');
+  if (!sbClient || !state.playerId) {
+    document.getElementById('curriculum-list').innerHTML =
+      '<p style="color:rgba(255,255,255,.4);text-align:center">Connectez-vous pour définir votre programme.</p>';
+    return;
+  }
+
+  const el = document.getElementById('curriculum-list');
+  el.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+  try {
+    // Charger les catégories disponibles
+    const [{ data: cats }, { data: existing }] = await Promise.all([
+      sbClient.from('categories').select('id, label, icon, slug').eq('visible', true).is('parent_id', null).order('position'),
+      sbClient.from('player_curriculum').select('category_id, mode').eq('player_id', state.playerId)
+    ]);
+
+    curriculumDraft = {};
+    if (existing) existing.forEach(e => { curriculumDraft[e.category_id] = e.mode; });
+
+    if (!cats || cats.length === 0) {
+      el.innerHTML = '<p style="color:rgba(255,255,255,.4)">Aucune catégorie disponible.</p>';
+      return;
+    }
+
+    el.innerHTML = cats.map(cat => {
+      const mode = curriculumDraft[cat.id] || 'none';
+      return `
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:1.4rem">${escHtml(cat.icon || '📂')}</span>
+        <div style="flex:1">
+          <div style="font-size:.92rem;color:#fff;font-weight:500">${escHtml(cat.label)}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="setCurriculumMode('${cat.id}','active')"
+            style="padding:5px 12px;border-radius:8px;border:1px solid;font-size:.78rem;cursor:pointer;transition:all .15s;
+              ${mode==='active' ? 'background:rgba(26,86,219,.3);border-color:var(--gold);color:var(--gold);font-weight:600' : 'background:transparent;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)'}">
+            ✓ Actif
+          </button>
+          <button onclick="setCurriculumMode('${cat.id}','excluded')"
+            style="padding:5px 12px;border-radius:8px;border:1px solid;font-size:.78rem;cursor:pointer;transition:all .15s;
+              ${mode==='excluded' ? 'background:rgba(192,57,43,.2);border-color:#e87060;color:#e87060;font-weight:600' : 'background:transparent;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)'}">
+            ✗ Exclure
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<p style="color:rgba(255,255,255,.4)">Erreur de chargement.</p>';
+    console.warn('[curriculum] Erreur:', e);
+  }
+}
+
+function setCurriculumMode(catId, mode) {
+  const current = curriculumDraft[catId] || 'none';
+  // Toggle : si déjà actif, remettre à none
+  curriculumDraft[catId] = (current === mode) ? 'none' : mode;
+  openCurriculum(); // Re-render
+}
+
+async function saveCurriculum(action) {
+  if (!sbClient || !state.playerId) return;
+  if (action === 'clear') {
+    curriculumDraft = {};
+    await sbClient.from('player_curriculum').delete().eq('player_id', state.playerId);
+    showToast('Programme réinitialisé — toutes les catégories sont actives.');
+    showScreen('screen-dashboard');
+    return;
+  }
+
+  // Sauvegarder le curriculum
+  await sbClient.from('player_curriculum').delete().eq('player_id', state.playerId);
+  const toInsert = Object.entries(curriculumDraft)
+    .filter(([_, mode]) => mode !== 'none')
+    .map(([category_id, mode]) => ({ player_id: state.playerId, category_id, mode }));
+
+  if (toInsert.length > 0) {
+    await sbClient.from('player_curriculum').insert(toInsert);
+    const activeCount = toInsert.filter(r => r.mode === 'active').length;
+    const excludedCount = toInsert.filter(r => r.mode === 'excluded').length;
+    showToast(`Programme enregistré : ${activeCount} catégorie(s) active(s), ${excludedCount} exclue(s).`);
+  } else {
+    showToast('Programme réinitialisé — toutes les catégories sont actives.');
+  }
+  showScreen('screen-dashboard');
+}
+
 // ── Niveaux et barre de progression ──────────────────────────
 const LEVELS = [
   { name:'Novice',    icon:'🌱', min:0,    max:99    },
