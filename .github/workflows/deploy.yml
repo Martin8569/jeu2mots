@@ -10,44 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install zip
-        run: sudo apt-get install -y zip
-
-      - name: Find Netlify site and deploy
+      - name: Deploy to Netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
-          # Récupérer l'ID du site jeu2mots
-          SITES=$(curl -s -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
-            "https://api.netlify.com/api/v1/sites")
-          SITE_ID=$(echo "$SITES" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-for s in data:
-    name = s.get('name','')
-    url = s.get('ssl_url','') + s.get('url','')
-    if 'jeu2mots' in name or 'jeu2mots' in url or 'jeu.2mots' in url:
-        print(s['id'])
-        break
-" 2>/dev/null)
-
-          if [ -z "$SITE_ID" ]; then
-            echo "Site ID non trouvé, liste des sites disponibles:"
-            echo "$SITES" | python3 -c "import sys,json; [print(s['id'], s['name'], s.get('ssl_url','')) for s in json.load(sys.stdin)]" 2>/dev/null
-            exit 1
-          fi
-
-          echo "Deploying to site: $SITE_ID"
-
-          # Créer un ZIP du site
-          zip -r site.zip . -x ".git/*" ".github/*" "*.zip"
-
-          # Déployer via l'API Netlify
-          DEPLOY=$(curl -s -X POST \
-            "https://api.netlify.com/api/v1/sites/$SITE_ID/deploys" \
-            -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
-            -H "Content-Type: application/zip" \
-            --data-binary @site.zip)
-
-          echo "Deploy result:"
-          echo "$DEPLOY" | python3 -c "import sys,json; d=json.load(sys.stdin); print('ID:', d.get('id'), '| State:', d.get('state'), '| URL:', d.get('ssl_url',''))" 2>/dev/null || echo "$DEPLOY"
+          npm install -g netlify-cli --silent
+          echo "=== Sites disponibles ==="
+          netlify sites:list --auth $NETLIFY_AUTH_TOKEN 2>/dev/null | head -20
+          echo "=== Déploiement ==="
+          netlify deploy --prod --dir . --auth $NETLIFY_AUTH_TOKEN --site jeu2mots 2>&1
