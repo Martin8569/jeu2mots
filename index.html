@@ -2891,9 +2891,69 @@ async function loadQuestions() {
     questions = getFallbackQuestions();
   }
 
+  // ── Répétition espacée : filtrer selon la maîtrise du joueur ─
+  if (sbClient && state.playerEmail && questions.length > 0) {
+    try {
+      const { data: masteries } = await sbClient
+        .from('player_question_mastery')
+        .select('question_id, status, next_review_at, correct_streak')
+        .eq('player_id', state.playerId || '');
+
+      if (masteries && masteries.length > 0) {
+        const now = new Date();
+        const masteryMap = {};
+        masteries.forEach(m => { masteryMap[m.question_id] = m; });
+
+        // Catégoriser les questions
+        const toLearn    = []; // jamais vues
+        const toReview   = []; // erreurs récentes (due)
+        const toReinforce = []; // maîtrisées mais dues
+        const mastered   = []; // maîtrisées et pas dues → éviter
+
+        questions.forEach(q => {
+          const m = masteryMap[q.id];
+          if (!m) {
+            toLearn.push(q); // jamais vue → priorité haute
+          } else if (m.status === 'mastered' && new Date(m.next_review_at) > now) {
+            mastered.push(q); // ne pas reforcer si maîtrisée et pas due
+          } else if (m.status === 'learning' || (m.status === 'review' && new Date(m.next_review_at) <= now)) {
+            toReview.push(q); // à retravailler
+          } else if (m.status === 'mastered' && new Date(m.next_review_at) <= now) {
+            toReinforce.push(q); // rappel long terme
+          } else {
+            toLearn.push(q);
+          }
+        });
+
+        // Composition intelligente de la session (10 questions) :
+        // 4 à revoir (erreurs) + 4 nouvelles + 2 rappels maîtrisés
+        const smartPool = [
+          ...shuffle(toReview).slice(0, 4),
+          ...shuffle(toLearn).slice(0, 4),
+          ...shuffle(toReinforce).slice(0, 2),
+        ];
+
+        // Si pas assez, compléter
+        if (smartPool.length < 10) {
+          const usedIds = new Set(smartPool.map(q => q.id));
+          const fallback = [...toLearn, ...toReview, ...toReinforce, ...mastered]
+            .filter(q => !usedIds.has(q.id));
+          smartPool.push(...shuffle(fallback).slice(0, 10 - smartPool.length));
+        }
+
+        if (smartPool.length > 0) {
+          questions = smartPool; // remplacer le pool par la sélection intelligente
+          console.log('[mastery] Pool intelligent: revoir=' + toReview.length +
+            ' nouvelles=' + toLearn.length + ' rappels=' + toReinforce.length +
+            ' maîtrisées(skip)=' + mastered.length);
+        }
+      }
+    } catch(e) {
+      console.warn('[mastery] Erreur lecture mastery:', e);
+    }
+  }
+
   // ── Progression automatique par difficulté ───────────────
-  // Calcul du niveau de difficulté selon le score de la session
-  // 0-3 correctes → facile (1), 4-7 → moyen (2), 8+ → difficile (3)
   const currentDiff = computeCurrentDifficulty();
   state.currentDifficulty = currentDiff;
 
@@ -4118,6 +4178,7 @@ async function loadDashboard() {
       const totalPts = player.total_points || 0;
       state.totalPts = totalPts;
       state.playerRole = player.role || null;
+      state.playerId = player.id || null;
       localStorage.setItem('j2m_pts', totalPts);
       localStorage.setItem('j2m_role', player.role || '');
       updateLevelBadge(totalPts);
