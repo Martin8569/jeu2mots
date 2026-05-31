@@ -1537,9 +1537,18 @@
 <!-- ============================================================ ÉCRAN ACCUEIL -->
 <div id="screen-home" class="screen active">
 <div id="player-badge" style="display:none">
-    <div class="level-badge">
-      <span id="badge-icon">⭐</span>
-      <span id="badge-text">Bonjour !</span>
+    <div class="level-badge" id="level-badge-wrap" style="flex-direction:column;align-items:flex-start;padding:10px 16px;gap:6px;width:100%;max-width:400px">
+      <div style="display:flex;align-items:center;gap:8px;width:100%">
+        <span id="badge-icon" style="font-size:1.1rem">⭐</span>
+        <span id="badge-text" style="font-weight:600;color:var(--gold)">Bonjour !</span>
+        <span id="badge-pts" style="margin-left:auto;font-size:.78rem;color:rgba(255,255,255,.5)">0 pts</span>
+      </div>
+      <div id="level-progress-wrap" style="display:none;width:100%">
+        <div style="height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden">
+          <div id="level-progress-bar" style="height:100%;background:var(--gold);border-radius:99px;transition:width .5s ease;width:0%"></div>
+        </div>
+        <p id="level-progress-label" style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:3px"></p>
+      </div>
     </div>
   </div>
 
@@ -2564,11 +2573,24 @@ const state = {
   sessionId: null,
   playerEmail: localStorage.getItem('j2m_email') || null,
   playerPseudo: localStorage.getItem('j2m_pseudo') || null,
+  playerRole:   localStorage.getItem('j2m_role')   || null,
+  totalPts:     parseInt(localStorage.getItem('j2m_pts') || '0'),
   answersLog: [],
   votes: {},
   settings: {}
 };
 
+
+// ── Sécurité : échappement HTML pour les données utilisateur ─────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 // ============================================================
 // INIT
 // ============================================================
@@ -2630,6 +2652,7 @@ async function init() {
   if (state.playerPseudo) {
     document.getElementById('player-badge').style.display = 'block';
     document.getElementById('badge-text').textContent = state.playerPseudo;
+    updateLevelBadge(state.totalPts || 0);
   }
   if (state.playerEmail) showDashboardButton();
 
@@ -3553,6 +3576,53 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+
+
+// ── Gestionnaire d'erreurs Supabase global ─────────────────
+function handleSupabaseError(error, context) {
+  if (!error) return;
+  console.warn('[jeu2mots] Erreur Supabase (' + context + '):', error.message || error);
+  // Afficher un toast discret uniquement pour les erreurs critiques
+  if (error.code === 'PGRST116' || error.status === 401) {
+    showToast('Session expirée. Reconnectez-vous.', 'warn');
+  }
+}
+// ── Niveaux et barre de progression ──────────────────────────
+const LEVELS = [
+  { name:'Novice',    icon:'🌱', min:0,    max:99    },
+  { name:'Apprenti',  icon:'📖', min:100,  max:299   },
+  { name:'Confirmé',  icon:'✍️', min:300,  max:699   },
+  { name:'Expert',    icon:'🎯', min:700,  max:1499  },
+  { name:'Maître',    icon:'🏆', min:1500, max:2999  },
+  { name:'Légende',   icon:'🌟', min:3000, max:99999 }
+];
+
+function getLevelInfo(pts) {
+  return LEVELS.find(l => pts >= l.min && pts <= l.max) || LEVELS[0];
+}
+
+function updateLevelBadge(pts) {
+  const lvl  = getLevelInfo(pts);
+  const next = LEVELS[LEVELS.indexOf(lvl) + 1];
+  const icon = document.getElementById('badge-icon');
+  const text = document.getElementById('badge-text');
+  const ptsEl = document.getElementById('badge-pts');
+  const wrap = document.getElementById('level-progress-wrap');
+  const bar  = document.getElementById('level-progress-bar');
+  const lbl  = document.getElementById('level-progress-label');
+  if (icon) icon.textContent = lvl.icon;
+  if (text) text.textContent = lvl.name;
+  if (ptsEl) ptsEl.textContent = pts.toLocaleString('fr') + ' pts';
+  if (wrap && next) {
+    wrap.style.display = 'block';
+    const range = next.min - lvl.min;
+    const done  = pts - lvl.min;
+    const pct   = Math.min(100, Math.round((done / range) * 100));
+    if (bar) bar.style.width = pct + '%';
+    if (lbl) lbl.textContent = (next.min - pts) + ' pts pour ' + next.name;
+  }
+}
+
 function showToast(msg, duration = 2500) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -3561,7 +3631,7 @@ function showToast(msg, duration = 2500) {
 }
 
 function showLeaderboard() {
-  showToast('🏆 Classement bientôt disponible !');
+  showScreen('screen-classement'); loadLeaderboard();
 }
 
 function shuffle(arr) {
@@ -3690,10 +3760,12 @@ let proposeAnswerCount = 0;
 
 async function openPropose() {
   showScreen('screen-propose');
-  const level = computeLevel(state.score);
-  const minLevel = state.settings.min_level_propose || 'expert';
-  const levels = ['apprenti','confirmé','expert','maître','légende'];
-  const hasAccess = levels.indexOf(level.toLowerCase()) >= levels.indexOf(minLevel.toLowerCase());
+  // Admins et suzerains : accès direct sans restriction de niveau
+  const isAdmin = state.playerRole === 'admin' || state.playerRole === 'suzerain';
+  const level = computeLevel(state.totalPts || state.score || 0);
+  const minLevel = state.settings.min_level_propose || 'apprenti'; // seuil abaissé
+  const levels = ['novice','apprenti','confirmé','expert','maître','légende'];
+  const hasAccess = isAdmin || levels.indexOf(level.toLowerCase()) >= levels.indexOf(minLevel.toLowerCase());
 
   document.getElementById('propose-lock').style.display = hasAccess ? 'none' : 'block';
   document.getElementById('propose-form').style.display  = hasAccess ? 'block' : 'none';
@@ -3992,10 +4064,11 @@ async function submitQuestion() {
 
 // Afficher le bouton flottant après réponse (si niveau suffisant)
 function showProposeButton() {
-  const level = computeLevel(state.score);
-  const levels = ['apprenti','confirmé','expert','maître','légende'];
-  const minLevel = state.settings.min_level_propose || 'expert';
-  const hasAccess = levels.indexOf(level.toLowerCase()) >= levels.indexOf(minLevel.toLowerCase());
+  const isAdmin = state.playerRole === 'admin' || state.playerRole === 'suzerain';
+  const level = computeLevel(state.totalPts || state.score || 0);
+  const levels = ['novice','apprenti','confirmé','expert','maître','légende'];
+  const minLevel = state.settings.min_level_propose || 'apprenti';
+  const hasAccess = isAdmin || levels.indexOf(level.toLowerCase()) >= levels.indexOf(minLevel.toLowerCase());
   const btn = document.getElementById('btn-propose-float');
   if (btn) btn.classList.toggle('visible', hasAccess);
 }
@@ -4043,6 +4116,11 @@ async function loadDashboard() {
 
     if (player) {
       const totalPts = player.total_points || 0;
+      state.totalPts = totalPts;
+      state.playerRole = player.role || null;
+      localStorage.setItem('j2m_pts', totalPts);
+      localStorage.setItem('j2m_role', player.role || '');
+      updateLevelBadge(totalPts);
       const realLevel = player.level || computeLevel(totalPts);
 
       // Mettre à jour le state avec les vraies données Supabase
