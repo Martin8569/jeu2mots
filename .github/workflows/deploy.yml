@@ -7,15 +7,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      - name: Install netlify
+        run: npm install -g netlify-cli --silent
+
+      - name: List sites and deploy
         run: |
-          npm install -g netlify-cli --silent
-          echo "=== Sites disponibles ==="
-          netlify sites:list --auth $NETLIFY_AUTH_TOKEN 2>/dev/null | head -20
-          echo "=== Déploiement ==="
-          netlify deploy --prod --dir . --auth $NETLIFY_AUTH_TOKEN --site jeu2mots 2>&1
+          echo "--- Sites Netlify ---"
+          netlify sites:list --auth "$NETLIFY_AUTH_TOKEN"
+          echo "--- Deploy ---"
+          netlify deploy --prod --dir . --auth "$NETLIFY_AUTH_TOKEN" --site jeu2mots
+          echo "--- Done ---"
