@@ -1601,6 +1601,56 @@
   </div>
 </div>
 
+<!-- ============================================================ CLASSEMENT PUBLIC -->
+<div id="screen-classement" class="screen">
+  <div class="game-header">
+    <button class="btn btn-ghost" onclick="showScreen('screen-home')" style="padding:8px 16px;font-size:.85rem">⌂ Accueil</button>
+  </div>
+
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;text-align:center;margin-bottom:4px">🏆 Classement</h2>
+  <p style="text-align:center;font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:16px">Top joueurs · semaine en cours</p>
+
+  <!-- Onglets hebdo / global -->
+  <div style="display:flex;gap:8px;margin-bottom:18px">
+    <button id="tab-weekly" onclick="switchLeaderboardTab('weekly')"
+      style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:600;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+      📅 Cette semaine
+    </button>
+    <button id="tab-alltime" onclick="switchLeaderboardTab('alltime')"
+      style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.7);font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+      🌍 Tous les temps
+    </button>
+  </div>
+
+  <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- Bouton partage score -->
+  <div id="share-score-block" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px;margin-bottom:16px">
+    <p style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:12px;text-align:center">
+      Partagez votre score et défiez vos proches !
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="shareScoreWhatsApp()"
+        style="flex:1;min-width:120px;padding:10px 8px;border-radius:8px;border:none;background:#25D366;color:#fff;font-weight:600;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+        💬 WhatsApp
+      </button>
+      <button onclick="shareScoreLinkedIn()"
+        style="flex:1;min-width:120px;padding:10px 8px;border-radius:8px;border:none;background:#0A66C2;color:#fff;font-weight:600;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+        💼 LinkedIn
+      </button>
+      <button onclick="shareScoreX()"
+        style="flex:1;min-width:120px;padding:10px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-weight:600;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+        ✕ X / Twitter
+      </button>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startGame()" style="width:100%">▶ Jouer et améliorer mon score</button>
+</div>
+
+
 <!-- ============================================================ ÉCRAN JEU -->
 <div id="screen-game" class="screen">
   <div id="game-user-bar" style="display:none;padding:4px 16px 0;font-size:.72rem;color:rgba(255,255,255,.4);text-align:right">
@@ -3470,13 +3520,23 @@ function showResults() {
 }
 
 function computeLevel(points) {
-  const s = state.settings;
-  if (points >= parseInt(s.level_légende  || 2500)) return 'Légende';
-  if (points >= parseInt(s['level_maître'] || 1200)) return 'Maître';
-  if (points >= parseInt(s.level_expert  || 600))  return 'Expert';
-  if (points >= parseInt(s['level_confirmé'] || 300)) return 'Confirmé';
-  return 'Apprenti';
+  if (points >= 3000) return 'Légende';
+  if (points >= 1500) return 'Maître';
+  if (points >= 700)  return 'Expert';
+  if (points >= 300)  return 'Confirmé';
+  if (points >= 100)  return 'Apprenti';
+  return 'Novice';
 }
+
+// Seuils de niveaux (fixes)
+const LEVEL_MAP = [
+  { name: 'Novice',    min: 0,    max: 100,  icon: '🌱' },
+  { name: 'Apprenti',  min: 100,  max: 300,  icon: '📖' },
+  { name: 'Confirmé',  min: 300,  max: 700,  icon: '✍️' },
+  { name: 'Expert',    min: 700,  max: 1500, icon: '🎯' },
+  { name: 'Maître',    min: 1500, max: 3000, icon: '🏆' },
+  { name: 'Légende',   min: 3000, max: null, icon: '👑' },
+];
 
 // ============================================================
 // EMAIL CAPTURE
@@ -3845,7 +3905,118 @@ function showToast(msg, duration = 2500) {
 }
 
 function showLeaderboard() {
-  showScreen('screen-classement'); loadLeaderboard();
+  showScreen('screen-classement');
+  loadLeaderboard('weekly');
+  // Afficher bloc partage si score connu
+  const shareBlock = document.getElementById('share-score-block');
+  if (shareBlock) shareBlock.style.display = (state.totalPts > 0 || state.score > 0) ? 'block' : 'none';
+}
+
+let _lbTab = 'weekly';
+
+function switchLeaderboardTab(tab) {
+  _lbTab = tab;
+  const weekly  = document.getElementById('tab-weekly');
+  const alltime = document.getElementById('tab-alltime');
+  if (tab === 'weekly') {
+    if (weekly)  { weekly.style.background = 'var(--gold)'; weekly.style.color = '#000'; weekly.style.border = 'none'; }
+    if (alltime) { alltime.style.background = 'transparent'; alltime.style.color = 'rgba(255,255,255,.7)'; alltime.style.border = '1px solid rgba(255,255,255,.2)'; }
+  } else {
+    if (alltime) { alltime.style.background = 'var(--gold)'; alltime.style.color = '#000'; alltime.style.border = 'none'; }
+    if (weekly)  { weekly.style.background = 'transparent'; weekly.style.color = 'rgba(255,255,255,.7)'; weekly.style.border = '1px solid rgba(255,255,255,.2)'; }
+  }
+  loadLeaderboard(tab);
+}
+
+async function loadLeaderboard(tab) {
+  const el     = document.getElementById('leaderboard-list');
+  const podium = ['🥇','🥈','🥉'];
+  if (!el) return;
+  el.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+  try {
+    let data;
+    if (tab === 'weekly') {
+      // Top 10 cette semaine via player_sessions
+      const since = new Date();
+      since.setDate(since.getDate() - since.getDay()); // lundi
+      since.setHours(0,0,0,0);
+      const { data: sessions } = await sbClient
+        .from('player_sessions')
+        .select('player_email, score')
+        .gte('started_at', since.toISOString())
+        .order('score', { ascending: false });
+
+      if (!sessions?.length) {
+        el.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.35);font-size:.82rem;padding:16px 0">Aucune partie cette semaine — soyez le premier !</p>';
+        return;
+      }
+      // Agréger par email
+      const agg = {};
+      sessions.forEach(s => {
+        if (!agg[s.player_email]) agg[s.player_email] = { email: s.player_email, score: 0 };
+        agg[s.player_email].score += (s.score || 0);
+      });
+      // Récupérer pseudos
+      const emails = Object.keys(agg);
+      const { data: players } = await sbClient.from('players').select('email,pseudo,level').in('email', emails);
+      const pseudoMap = {};
+      (players||[]).forEach(p => { pseudoMap[p.email] = { pseudo: p.pseudo, level: p.level }; });
+      data = Object.values(agg)
+        .map(e => ({ pseudo: (pseudoMap[e.email]?.pseudo || e.email.split('@')[0]), level: (pseudoMap[e.email]?.level || '—'), total_points: e.score, email: e.email }))
+        .sort((a,b) => b.total_points - a.total_points)
+        .slice(0,10);
+    } else {
+      const { data: players } = await sbClient
+        .from('players')
+        .select('email, pseudo, level, total_points')
+        .order('total_points', { ascending: false })
+        .limit(10);
+      data = players || [];
+    }
+
+    if (!data.length) {
+      el.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.35);font-size:.82rem;padding:16px 0">Classement vide pour l'instant.</p>';
+      return;
+    }
+
+    const myEmail = state.playerEmail;
+    el.innerHTML = data.map((p, i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${p.email===myEmail?'rgba(26,86,219,.15)':'rgba(255,255,255,.04)'};border:1px solid ${p.email===myEmail?'rgba(26,86,219,.3)':'rgba(255,255,255,.08)'};border-radius:10px">
+        <span style="font-size:${i<3?'1.3rem':'.9rem'};min-width:32px;text-align:center;font-weight:700;color:${i===0?'#FFD700':i===1?'#C0C0C0':i===2?'#CD7F32':'rgba(255,255,255,.5)'}">${i<3?podium[i]:'#'+(i+1)}</span>
+        <span style="flex:1;font-size:.88rem;color:#fff;font-weight:${p.email===myEmail?'700':'400'}">${p.pseudo||'Joueur'} ${p.email===myEmail?'<span style="color:var(--gold);font-size:.7rem">(vous)</span>':''}</span>
+        <span style="font-size:.75rem;color:rgba(255,255,255,.4);margin-right:4px">${p.level||''}</span>
+        <span style="font-size:.88rem;font-weight:600;color:var(--gold)">${(p.total_points||0).toLocaleString('fr')}</span>
+      </div>
+    `).join('');
+  } catch(e) {
+    el.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.35);font-size:.82rem;padding:16px 0">Classement temporairement indisponible.</p>';
+  }
+}
+
+function shareScoreWhatsApp() {
+  const pts   = state.totalPts || state.score || 0;
+  const level = computeLevel(pts);
+  const txt   = encodeURIComponent('🖊️ Je suis ' + level + ' sur jeu2mots avec ' + pts + ' pts ! Teste ton niveau en français ici : https://jeu.2mots.fr');
+  window.open('https://api.whatsapp.com/send?text=' + txt, '_blank');
+  trackEvent('share_clicked', { platform: 'whatsapp' });
+}
+
+function shareScoreLinkedIn() {
+  const pts   = state.totalPts || state.score || 0;
+  const level = computeLevel(pts);
+  const url   = encodeURIComponent('https://jeu.2mots.fr');
+  const txt   = encodeURIComponent('Je suis ' + level + ' sur jeu.2mots.fr avec ' + pts + ' pts ! Un jeu sérieux pour maîtriser la langue française. #écriture #français #formation');
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url + '&summary=' + txt, '_blank');
+  trackEvent('share_clicked', { platform: 'linkedin' });
+}
+
+function shareScoreX() {
+  const pts   = state.totalPts || state.score || 0;
+  const level = computeLevel(pts);
+  const txt   = encodeURIComponent('🖊️ Niveau ' + level + ' — ' + pts + ' pts sur #jeu2mots ! Testez votre français : https://jeu.2mots.fr');
+  window.open('https://twitter.com/intent/tweet?text=' + txt, '_blank');
+  trackEvent('share_clicked', { platform: 'x' });
 }
 
 function shuffle(arr) {
@@ -4381,38 +4552,34 @@ async function loadDashboard() {
 }
 
 function renderLevelProgress(pts, level) {
-  const s = state.settings;
-  const levelMap = [
-    { name: 'Apprenti',  min: 0,                                  max: parseInt(s['level_confirmé'] || 300)  },
-    { name: 'Confirmé',  min: parseInt(s['level_confirmé'] || 300), max: parseInt(s.level_expert    || 600)  },
-    { name: 'Expert',    min: parseInt(s.level_expert    || 600),   max: parseInt(s['level_maître'] || 1200) },
-    { name: 'Maître',    min: parseInt(s['level_maître'] || 1200),  max: parseInt(s['level_légende']|| 2500) },
-    { name: 'Légende',   min: parseInt(s['level_légende']|| 2500),  max: null                                },
-  ];
-
-  const current = levelMap.find(l => l.name.toLowerCase() === level.toLowerCase());
+  const levelMap = LEVEL_MAP;
+  const current = levelMap.find(l => l.name === level) || levelMap[0];
   const idx     = levelMap.indexOf(current);
   const next    = levelMap[idx + 1];
 
-  document.getElementById('lp-current').textContent = level;
+  const lpCurrent = document.getElementById('lp-current');
+  const lpNext    = document.getElementById('lp-next');
+  const lpBar     = document.getElementById('lp-bar');
+  const lpNeeded  = document.getElementById('lp-pts-needed');
+  if (!lpBar) return;
+
+  if (lpCurrent) lpCurrent.textContent = (current.icon || '') + ' ' + level;
 
   if (!next) {
-    // Niveau maximum atteint
-    document.getElementById('lp-next').textContent      = '👑 Niveau maximum';
-    document.getElementById('lp-bar').style.width       = '100%';
-    document.getElementById('lp-pts-needed').textContent = 'Vous avez atteint le sommet !';
+    if (lpNext)   lpNext.textContent   = '👑 Niveau maximum';
+    lpBar.style.width = '100%';
+    if (lpNeeded) lpNeeded.textContent = 'Vous avez atteint le sommet !';
     return;
   }
 
-  document.getElementById('lp-next').textContent = next.name;
+  if (lpNext) lpNext.textContent = (next.icon || '') + ' ' + next.name;
   const range   = next.min - current.min;
   const done    = pts - current.min;
   const pct     = Math.min(100, Math.round((done / range) * 100));
   const missing = next.min - pts;
 
-  document.getElementById('lp-bar').style.width        = pct + '%';
-  document.getElementById('lp-pts-needed').textContent =
-    missing > 0 ? `${missing.toLocaleString('fr')} points pour atteindre ${next.name}` : 'Niveau atteint !';
+  lpBar.style.width = pct + '%';
+  if (lpNeeded) lpNeeded.textContent = missing + ' pts pour ' + next.name;
 }
 
 async function loadRankings(playerId, totalPts, monthlyPts) {
@@ -5517,6 +5684,27 @@ function showConnectedBadge(pseudo, level, points) {
   if (avatarEl) avatarEl.textContent = initial;
   if (nameEl)   nameEl.textContent   = pseudo;
   if (levelEl)  levelEl.textContent  = level + ' — ' + (points || 0).toLocaleString('fr') + ' pts';
+
+  // Barre de progression niveau sur accueil
+  const lvlWrap  = document.getElementById('level-progress-wrap');
+  const lvlBar   = document.getElementById('level-progress-bar');
+  const lvlLabel = document.getElementById('level-progress-label');
+  if (lvlWrap && lvlBar) {
+    lvlWrap.style.display = 'block';
+    const lm = LEVEL_MAP;
+    const cur = lm.find(l => l.name === level) || lm[0];
+    const nxt = lm[lm.indexOf(cur) + 1];
+    if (nxt) {
+      const range = nxt.min - cur.min;
+      const done  = Math.max(0, points - cur.min);
+      const pct   = Math.min(100, Math.round((done / range) * 100));
+      lvlBar.style.width = pct + '%';
+      if (lvlLabel) lvlLabel.textContent = (nxt.min - points) + ' pts pour ' + (nxt.icon||'') + ' ' + nxt.name;
+    } else {
+      lvlBar.style.width = '100%';
+      if (lvlLabel) lvlLabel.textContent = '👑 Niveau maximum atteint !';
+    }
+  }
 
   // Bouton tableau de bord
   const dashBtn = document.getElementById('btn-dashboard');
